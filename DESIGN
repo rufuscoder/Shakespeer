@@ -1,0 +1,52 @@
+This is an attempt at describing the overall design choices made when creating
+ShakesPeer.
+
+Processes and inter-process communication
+-----------------------------------------
+The ShakesPeer program is not really one program, but three. Those are sphubd,
+sphashd and the UI (user interface). Those three parts are run as separate
+processes.  Inter-process communication between those three programs is achieved
+by using sockets. By default, unix sockets are used, which are local. Using
+unix sockets, all programs must be running on the same computer. Replacing the
+unix socket with a TCP socket enables the programs to run on different
+machines. In fact, sphubd already has that option when communcating with the
+UI.
+
+Portability
+-----------
+The core servers (sphubd and sphashd) are written in C. Actually C99 with GCC
+extensions, so GCC is required for compilation. Otherwise they should be quite
+portable across Unix-like operating systems. At least Darwin (Mac OS X), Linux
+and OpenBSD are supported.
+
+There are currently two user interfaces: one command line client and the
+graphical user interface for Mac OS X. The command line client should be
+portable, but the OS X GUI requires Mac OS X. Creating different user
+interfaces for different platforms and/or GUI toolkits is made easier by having
+most of the functionality in the core servers.
+
+sphubd
+------
+The sphubd process is responsible for hub communication, peer communication
+(uploads/downloads), handling the download queue and shared files, listening
+for search results and communicating events to the UI.
+
+Persistence of the download queue and file hashes (TTHs) is achieved with
+simple text-based database logfiles.
+
+No threads are used. This is a very important design choice, and is what
+separates ShakesPeer from most other DC implementations. Preemptive threads
+are a PITA.
+
+FIXME: describe event loops ...
+
+sphashd
+-------
+The sphashd process is responsible for hashing files. The reason this is a
+separate process from sphubd is to be able to decrease the priority level
+("nice" value). Since hashing is a CPU intensive and quite lengthy task,
+reducing the priority of the sphashd process enables the user to actually use
+the computer for other tasks. Note that if no other programs use the CPU,
+sphashd will still use near 100% CPU, but will "step aside" as soon as another
+process is running.
+

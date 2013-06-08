@@ -1,0 +1,49 @@
+{
+    IBClasses = (
+        {
+            ACTIONS = {search = id; }; 
+            CLASS = FilteringArrayController; 
+            LANGUAGE = ObjC; 
+            SUPERCLASS = NSArrayController; 
+        }, 
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {CLASS = SPOutlineView; LANGUAGE = ObjC; SUPERCLASS = NSOutlineView; }, 
+        {
+            ACTIONS = {
+                autoMatchFilelist = id; 
+                copyTTH = id; 
+                doSearch = id; 
+                downloadFile = id; 
+                downloadParentDirectory = id; 
+                filter = id; 
+                getFilelist = id; 
+                relaunchSearch = id; 
+                startPrivateChat = id; 
+                toggleColumn = id; 
+            }; 
+            CLASS = SPSearchWindowController; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                columnsMenu = NSMenu; 
+                contextMenu = NSMenu; 
+                menuItemCopyTTH = NSMenuItem; 
+                requireOpenSlotButton = NSButton; 
+                requireTTHButton = NSButton; 
+                searchField = NSSearchField; 
+                searchResultTable = SPOutlineView; 
+                statusField = NSTextField; 
+                tcHub = NSTableColumn; 
+                tcNick = NSTableColumn; 
+                tcPath = NSTableColumn; 
+                tcSize = NSTableColumn; 
+                tcSlots = NSTableColumn; 
+                tcSpeed = NSTableColumn; 
+                tcTTH = NSTableColumn; 
+            }; 
+            SUPERCLASS = NSWindowController; 
+        }, 
+        {CLASS = SPTableView; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
+        {CLASS = XBorderedView; LANGUAGE = ObjC; SUPERCLASS = NSView; }
+    ); 
+    IBVersion = 1; 
+}

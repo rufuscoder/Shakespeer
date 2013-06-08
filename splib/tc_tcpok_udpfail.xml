@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<c>
+    <tcp s="0"/>
+    <udp s="1" e="Operation timed out"/>
+</c>

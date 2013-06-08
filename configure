@@ -1,0 +1,15 @@
+. ./support/configure.sub
+
+check_c_compiler || exit 1
+
+search_libs bz2 BZ2_bzWriteOpen -lbz2 && search_header bz2 bzlib.h
+search_libs expat XML_SetElementHandler -lexpat && search_header expat expat.h
+search_libs libevent evhttp_connection_get_peer -levent &&
+	search_header libevent event.h '#include <sys/types.h>
+#include <sys/time.h>'
+search_libs iconv iconv_open || search_libs iconv iconv_open -liconv
+check_iconv_constness
+check_function fgetln
+
+true
+

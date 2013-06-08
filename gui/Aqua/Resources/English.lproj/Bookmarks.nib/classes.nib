@@ -1,0 +1,48 @@
+{
+    IBClasses = (
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {CLASS = NSMenu; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {CLASS = NSObject; LANGUAGE = ObjC; }, 
+        {
+            ACTIONS = {
+                connectToSelectedBookmark = id; 
+                duplicateBookmark = id; 
+                editBookmarkCancel = id; 
+                editBookmarkExecute = id; 
+                editBookmarkShow = id; 
+                newBookmarkCancel = id; 
+                newBookmarkExecute = id; 
+                newBookmarkShow = id; 
+                removeBookmarkShow = id; 
+                setEncoding = id; 
+            }; 
+            CLASS = SPBookmarkController; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                arrayController = NSArrayController; 
+                bookmarkMenu = NSMenu; 
+                bookmarkTable = NSTableView; 
+                bookmarkView = NSView; 
+                editBookmark = NSWindow; 
+                editBookmarkAddress = NSTextField; 
+                editBookmarkAutoconnect = NSButton; 
+                editBookmarkDescription = NSTextField; 
+                editBookmarkEncoding = NSPopUpButton; 
+                editBookmarkName = NSTextField; 
+                editBookmarkNickname = NSTextField; 
+                editBookmarkPassword = NSTextField; 
+                newBookmark = NSWindow; 
+                newBookmarkAddress = NSTextField; 
+                newBookmarkAutoconnect = NSButton; 
+                newBookmarkDescription = NSTextField; 
+                newBookmarkEncoding = NSPopUpButton; 
+                newBookmarkName = NSTextField; 
+                newBookmarkNickname = NSTextField; 
+                newBookmarkPassword = NSTextField; 
+            }; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {CLASS = SPTableView; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }
+    ); 
+    IBVersion = 1; 
+}

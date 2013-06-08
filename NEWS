@@ -1,0 +1,220 @@
+New in version 0.9.11:
+
+* Automatic port forwarding using UPnP/NAT-PMP, which should solve network problems for many users
+* The main window can now be closed and reopened
+* All transfers now uses a progressbar instead of percentage numbers to indicate progress
+* Added support for magnet links
+* It is now possible to disable automatic rescanning of shares
+* If one of your friends is mentioned in a chat, the name is now highlighted
+* Fixed an issue where folders weren't displayed when filtering file lists
+* Terabyte measures now uses two decimals instead of one
+* Fixed an issue where duplicate users occured in the user list
+* Bookmarks are no longer duplicated when adding them using the "/fav" command
+* The default download folder is now ~/Downloads on Mac OS X 10.5 Leopard
+* Tweaked the colors of the connection health indicator in preferences, to be a bit easier on the eyes
+* Rearranged the keyboard shortcuts for the various main views, and added a shortcut for Friends
+
+New in version 0.9.10:
+
+* Fixed a nasty bug in 0.9.9, which caused ShakesPeer to crash
+* You can now press command-T to toggle the transfer drawer
+
+New in version 0.9.9:
+
+* issue 41: Background processes are now universal binaries again
+* issue 28: The /np (now playing in iTunes) command is finally working again
+* issue 26: Fix opening files in Finder from the downloads list
+* Fix some memory leaks
+
+New in version 0.9.8:
+
+* issue 27: Using the Friends feature could make ShakesPeer not being able to startup on OS X 10.4
+* issue 22: Make hub user commands work again
+* issue 21: Fix a crash in share duplicate notification
+* issue 19: ShakesPeer no longer hogs the CPU when sorting user lists
+* issue 20: Hub operators are now sorted first in user lists again
+* issue 12: Improve nick tab completion in main chat (thanks to voidboi)
+* Allow /np (now playing) command to work in private chats too
+* issue 35: Improve autoscrolling in main chat (thanks to 'kacarste...@csupomona.edu')
+* Fix two minor memory leaks
+* Make port status message use colors in preferences
+* The toolbar button "Connect" is now called "Connect to hub" for clarity
+* issue 11: [Command-line client] Don't create duplicate entries in downloads when running both the CLI and the GUI (thanks to adbull)
+* issue 13: [Command-line client] Don't duplicate download directory in path of downloaded files (thanks to adbull)
+
+New in version 0.9.7:
+
+* Make built packages run on 10.4 too, doh! (Thanks to 0.heavy.duty.0)
+* Remove superfluous "context" toolbar button
+
+New in version 0.9.6:
+
+* You can now have a list of friends
+* Reveal duplicate share entries by control-clicking the shared folder in preferences
+* Use Sparkle for automatic updates
+* Fix sorting of user lists in hubs
+* Use the previously supplied password when attempting reconnects
+* Don't incorrectly report zero open slots to hubs
+* Don't queue multiple downloads in reverse order
+* Allow simultaneous upload and download with same peer
+* Automatic crash reports
+* Option to disallow hubs from overriding your external ip (thanks to Kevin Ballard)
+* Allow Revconnect (and possibly other clients) to connect to ShakesPeer (thanks to Zintis Petersons)
+
+New in version 0.9.5:
+
+* Fixed reporting of total slots
+* Fixed crash when hashing files
+* Fixed problem with disappearing queue
+* Fixed quoting issues in queue database
+* Arrow keys now work in filelist browser again
+* Added tab completion of nicks in main chat
+
+New in version 0.9.4:
+
+* New database backend: FILE HASHES ARE LOST
+* Fixes problems with database corruption
+* More controlled startup
+* Uses ShakesPeer-specific tag
+* Fixed buggy upload slots limit
+* Lots more...
+
+New in version 0.9.3:
+
+* Fixed overwriting standard hub menu items with custom user-commands
+* Fixed crash during reconnection
+* Split shakespeer.db into multiple databases (queue.db, tth.db)
+* Added Keychain support (from Alimony)
+* Remember transfer drawer state and height (from Alimony)
+* Major speedup in incoming TTH searches
+* Added Growl notification for finished downloads
+* Reworked the download queue completely (incompatible, queue lost)
+* Reworked the share system completely (incompatible, need rehashing)
+* Reworked the bookmarks view (from Alimony)
+* All tables can now be right-clicked to select visible columns (from Alimony)
+* Added Open and Reveal in Finder menu items in queue view
+* Use unified toolbar instead of metal look
+* Universal Binary
+* Stability fixes
+* + much more...
+
+New in version 0.9.2:
+
+* Reverted braindead "fix" for missing directories in 0.9.1
+
+New in version 0.9.1:
+
+* Added setting to disable auto-searches
+* Fixed a bug that made multiple sources result in multiple downloaded files
+* Fixed crash when resolving strange domain names
+* Fixed problem with hashing not starting
+* Fixed problem with re-hashing the same files over and over again
+* Added setting of hashing priority
+* Fixed pausing of download when removing a source
+* Fixed a crash when granting extra slots
+* Disable automatic reconnection if we're banned
+* Doesn't automagically create missing download directories (this is most often
+  due to an unattached external hard drive)
+* Changed asynchronous DNS implementation
+
+New in version 0.9:
+
+* Replaced GLibs IO channels with libevent
+* Button in search window to relaunch searches
+* Automatic reconnection to hubs (doesn't detect kicks though)
+* Filtering search results on open slots and tth
+* Added menu items to match against users filelists
+* Keep saved filelists accessible between restarts
+* Command-T now toggles the transfer drawer
+* Improved startup time
+* Implemented granting of extra slots
+* Moved and renamed files in share are now identified and don't need re-hashing
+* Added button in preferences to pause and resume hashing
+* Log files are placed in ~/Library/Logs by default on Mac OS X
+* Use c-ares for asynchronous DNS lookups
+
+New in version 0.8.5:
+
+* Fixed crash when sending search responses
+
+New in version 0.8.4:
+
+* Worked around problem with lost connection between GUI and backend server
+
+New in version 0.8.3:
+
+* Memory leaks fixed
+* Case insensitive compare of nick names in hub user list
+* Supports setting different encoding per hub
+* Fixed bug where files were placed in wrong folders in the filelist
+* Fixed user update bug
+* Added growl notification on nick mentioned in main chat
+* Added option to disable hub redirects
+
+New in version 0.8.2:
+
+* Hopefully fixed public hubs list loading
+* Ability to set number of upload slots globally (as in DC++)
+* Better xml filelist compatibility with DC++
+* Refreshes public hublist asynchronously
+* Tests port settings asynchronously
+* Better presentation of disconnected hubs
+* Better presentation of double passive mode downloads
+* Added /reconnect command
+* Added server messages panel
+* Allow browsing own filelist
+* Fixed problems with empty filelists due to invalid UTF-8 encoding
+* Added setting to rescan share every x hours
+* Initial Growl support
+
+New in version 0.8.1:
+
+* Fixed hashing bug with filenames ending with spaces (thanks Peter)
+* Context menu in hub table header to enable/disable columns
+* Fixed crash when connecting to certain hubs
+* Added User-Command support to search view
+
+New in version 0.8:
+
+* Automatic matching of queue from search responses based on TTH and size
+* Fixed context menu in transfer drawer
+* Default nmdc user-commands (Kick and Redirect) in user table context menu
+* Added Browse and PM items in transfers context menu
+* Use hubnames in sidebar
+* Non-blocking sockets in server (should fix most freezes)
+* Added /userlist and /search commands in hub chat
+* OP-Chat now shows correct nicknames
+* Added preference option to connect to a remote backend server
+* Sorting in filelist view
+* Initial sorting by OP status and nick name in hub users table
+* Added filter in filelist view
+* Added option to disable emoticons in chat
+* Command + Up/Down now selects previous/next item in the sidebar
+* Download folders from search view
+* Show login/logout events in private chat view
+* Supports setting priority per file
+* Directory hierarchy in download queue
+* Doesn't automatically focus new sidebar items
+* Groups search results with matching TTH
+
+New in version 0.7.3:
+
+* Fixed hashing bug: intifinite loop if filename includes a pipe character
+* Fixed crash with search responses with invalid character encoding
+* Rotate logs while ShakesPeer is running
+* Added hub keep-alive messages (+ detection of lost connection)
+* Added idle timeout (5 minutes) in transfers
+* Added support for automatic checks for updates
+
+New in version 0.7.2:
+
+* Fixed memory leaks
+* Fixed failing assertion in cc_start_upload
+
+New in version 0.7.1:
+
+* Implemented /join command
+* Added the transfer drawer back + toolbar button to show it
+* Reworked the /me command
+* Fixed offset bug in resumed downloads (all resumed downloads so far has been corrupt!)
+* Updating is highly recommended!

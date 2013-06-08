@@ -1,0 +1,52 @@
+{
+    IBClasses = (
+        {
+            CLASS = DCHubArrayController; 
+            LANGUAGE = ObjC; 
+            SUPERCLASS = NSArrayController; 
+        }, 
+        {
+            ACTIONS = {connect = id; refresh = id; tableDoubleActionConnect = id; }; 
+            CLASS = DCPublicHubsController; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                addressField = NSTextField; 
+                arrayController = FilteringArrayController; 
+                hubListView = NSView; 
+                hubTable = NSTableView; 
+                refreshButton = NSButton; 
+            }; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {
+            ACTIONS = {search = id; }; 
+            CLASS = FilteringArrayController; 
+            LANGUAGE = ObjC; 
+            SUPERCLASS = NSArrayController; 
+        }, 
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            ACTIONS = {
+                addHubsToBookmarks = id; 
+                connect = id; 
+                refresh = id; 
+                tableDoubleActionConnect = id; 
+                toggleColumn = id; 
+            }; 
+            CLASS = SPPublicHubsController; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                arrayController = FilteringArrayController; 
+                contextMenu = NSMenu; 
+                hubListView = NSView; 
+                hubTable = NSTableView; 
+                refreshButton = NSButton; 
+            }; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {CLASS = SPTableView; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
+        {CLASS = XBorderedView; LANGUAGE = ObjC; SUPERCLASS = NSView; }, 
+        {CLASS = XTextField; LANGUAGE = ObjC; SUPERCLASS = NSTextField; }
+    ); 
+    IBVersion = 1; 
+}

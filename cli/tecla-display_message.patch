@@ -1,0 +1,62 @@
+--- libtecla/getline.c  2004-10-31 21:02:11.000000000 +0000
++++ libtecla.fixed/getline.c    2006-03-30 10:58:59.000000000 +0000
+@@ -66,6 +66,9 @@
+ #include <curses.h>
+ #elif defined(HAVE_NCURSES_CURSES_H)
+ #include <ncurses/curses.h>
++#else
++# undef USE_TERMINFO
++# undef USE_TERMCAP
+ #endif
+ /*
+  * Include term.h where available.
+@@ -11348,6 +11351,30 @@
+   return status;
+ }
+ 
++int gl_display_message(GetLine *gl, const char *message)
++{
++  int waserr = 0; /* True after an error */
++/*
++ * Only display output when echoing is on.
++ */
++  if(gl->echo) {
++      gl_erase_line(gl);
++/*
++ * Display the list of provided messages.
++ */
++      waserr = gl_print_raw_string(gl, 1, message, -1);
++/*
++ * Start a newline.
++ */
++    waserr = waserr || gl_print_raw_string(gl, 1, "\n\r", -1);
++/*
++ * Arrange for the input line to be redrawn.
++ */
++    gl_queue_redisplay(gl);
++  };
++  return waserr;
++}
++
+ /*.......................................................................
+  * Block all of the signals that we are currently trapping.
+  *
+--- libtecla-orig/libtecla.h	Wed May 12 08:01:30 2004
++++ libtecla/libtecla.h	Fri Apr 29 13:21:24 2005
+@@ -1322,6 +1322,7 @@
+ 		    const char *suffix, int fill_char, int def_width,
+ 		    int start, const char *string);
+ 
++int gl_display_message(GetLine *gl, const char *message);
+ 
+ /*
+  * Enumerate the I/O modes supported by gl_get_line().
+diff -u libtecla-orig/libtecla.map libtecla/libtecla.map
+--- libtecla-orig/libtecla.map	Thu Mar 25 10:42:36 2004
++++ libtecla/libtecla.map	Fri Apr 29 13:48:51 2005
+@@ -152,4 +152,5 @@
+ 	gl_automatic_history;
+ 	gl_query_char;
+ 	gl_read_char;
++	gl_display_message;
+ } tecla_l.5;

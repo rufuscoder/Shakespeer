@@ -1,0 +1,65 @@
+a 0
+
+# the name of the struct
+cs ui_t
+ss sp_t
+
+# prefix
+cp ui
+sp sp
+
+# extra include files
+ci "ui_cmd.h"
+si "spclient.h"
+chi "sys_queue.h"
+chi <sys/time.h>
+chi <sys/types.h>
+chi <event.h>
+
+# extra members in the struct
+m LIST_ENTRY(ui) next
+m struct event send_state_event
+m int fd
+m struct bufferevent *bufev
+
+c search-all string:search_string uint64:size int:size_restriction int:file_type int:id
+c search string:hub_address string:search_string uint64:size int:size_restriction int:file_type int:id
+c connect string:hub_address string:nick string:email string:description string:speed int:passive string:password string:encoding
+c disconnect string:hub_address
+c public-message string:hub_address string:message
+c private-message string:hub_address string:nick string:message
+c download-file string:hub_address string:nick string:source_filename uint64:size path:target_filename string:tth
+c download-filelist string:hub_address string:nick bool:force_update bool:auto_match
+c download-directory string:hub_address string:nick string:source_directory path:target_directory
+c queue-remove-target path:target_filename
+c queue-remove-source path:target_filename string:nick
+c queue-remove-directory string:target_directory
+c queue-remove-nick string:nick
+c queue-remove-filelist string:nick
+c cancel-transfer path:target_filename
+c transfer-stats-interval uint:seconds
+c set-port int:port
+c set-ip-address string:ip_address
+c set-allow-hub-ip-override bool:allow_hub_override
+c add-shared-path path:path
+c remove-shared-path path:path
+c shutdown
+c set-password string:hub_address string:password
+c update-user-info string:speed string:description string:email
+c set-slots uint:slots uint:per_hub_flag
+c set-passive int:on
+c forget-search int:search_id
+c log-level string:level
+c raw-command string:hub_address string:command
+c set-priority string:target_filename uint:priority
+c rescan-share-interval uint:seconds
+c set-follow-redirects uint:flag
+c grant-slot string:nick
+c pause-hashing
+c resume-hashing
+c set-auto-search int:enabled
+c set-hash-prio uint:prio
+c set-download-directory string:download_directory
+c set-incomplete-directory string:incomplete_directory
+c expect-shared-paths int:num_shared_paths
+

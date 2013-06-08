@@ -1,0 +1,23 @@
+cs hs_t
+cp hs
+ci "sphashd_client.h"
+
+ss hc_t
+sp hc
+si "sphashd.h"
+
+chi "sys_queue.h"
+chi <sys/types.h>
+chi <sys/time.h>
+chi <event.h>
+chi "share.h"
+
+m int fd
+m struct bufferevent *bufev
+m share_file_list_t *unfinished_list
+m bool finished
+m bool paused
+
+c add-hash string:filename string:hash_base32 string:leaves_base64 double:mibs_per_sec
+c fail-hash string:filename
+

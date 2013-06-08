@@ -1,0 +1,33 @@
+# vim: ft=conf
+
+notification search_response pointer:response
+notification filelist_finished string:hub_address string:nick string:filename bool:auto_matched
+notification download_finished string:filename
+
+notification extra_slot_granted string:nick int:extra_slots
+
+notification external_ip_detected string:external_ip
+
+########## share notifications
+
+notification share_file_added
+notification share_scan_finished string:path
+notification share_duplicate_found string:path
+notification tth_available pointer:file string:tth string:leafdata_base64 double:mibs_per_sec
+notification hashing_complete
+notification will_remove_share string:local_root
+notification did_remove_share string:local_root bool:is_rescan
+
+########## download queue notifications
+notification filelist_added string:nick int:priority
+notification filelist_removed string:nick
+notification queue_source_removed string:target_filename string:nick
+notification queue_target_removed string:target_filename
+notification queue_source_added string:target_filename string:nick string:source_filename
+notification queue_target_added string:target_filename uint64:size string:tth int:priority
+notification queue_directory_removed string:target_directory
+notification queue_priority_changed string:target_filename int:priority
+
+# FIXME: Removing this should also remove the queued filelist?
+notification queue_directory_added string:target_directory string:nick
+

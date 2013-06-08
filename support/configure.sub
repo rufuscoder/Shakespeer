@@ -1,0 +1,358 @@
+# Copyright (c) 2006-2008 Martin Hedenfalk <martin@bzero.se>
+#
+# Permission to use, copy, modify, and distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+#
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+exec 3>config.mk
+exec 2>configure.log
+exec 4>&1
+
+CC=${CC:-cc}
+
+log()
+{
+	/bin/echo $* >&2
+	/bin/echo >&2
+}
+
+logfile()
+{
+	cat $1 >&2
+}
+
+msg()
+{
+	log $*
+	/bin/echo $* >&4
+}
+
+checking()
+{
+	msg -n Checking $*
+}
+
+out()
+{
+	/bin/echo $* >&3
+}
+
+check_lib()
+{
+	func=$1
+	shift
+	libs=$*
+
+	old_LIBS=$LIBS
+	LIBS="$LIBS $libs"
+
+	try_compile <<EOF
+void $func(); int main() { $func(); return 0; }
+EOF
+	rc=$?
+
+	LIBS=$old_LIBS
+	return $rc
+}
+
+check_function()
+{
+	func=$1
+	checking for function $func...
+	check_lib $func
+	rc=$?
+	if test $rc -eq 0; then
+		msg yes
+		out HAVE_$(echo $func | tr a-z-. A-Z__)=yes
+	else
+		msg no
+		out HAVE_$(echo $func | tr a-z-. A-Z__)=no
+	fi
+}
+
+check_header()
+{
+	dir=$1
+	shift
+	includes=$*
+
+	old_CFLAGS=$CFLAGS
+	test -n "$dir" && CFLAGS="$CFLAGS -I$dir"
+
+	try_compile <<EOF
+$includes
+int main() { return 0; }
+EOF
+	rc=$?
+
+	CFLAGS=$old_CFLAGS
+	return $rc
+}
+
+search_header()
+{
+	name=$1
+	header=$2
+	shift; shift
+	extra_headers=$*
+	header_uc=$(echo $header | tr a-z-. A-Z__)
+	name_uc=$(echo $name | tr a-z-. A-Z__)
+
+	checking for $header...
+	for dir in "" /usr/local/include /opt/local/include /sw/include; do
+		if test -z "$dir" -o -d "$dir"; then
+			if check_header "$dir" "$extra_headers
+#include <$header>"; then
+				out HAS_${header_uc}=yes
+				test -n "$dir" && out ${name_uc}_CFLAGS=-I$dir
+				msg yes
+				return 0
+			fi
+		fi
+	done
+
+	msg no
+	return 1
+}
+
+search_libs()
+{
+	lib=$1
+	func=$2
+	shift
+	shift
+	libs=$*
+
+	lib_uc=$(echo $lib | tr a-z- A-Z_)
+
+	if test -z "$libs"; then
+		checking for $lib: $func...
+	else
+		checking for $lib: $func in $libs...
+	fi
+	for libdir in "" /usr/local/lib /opt/local/lib /sw/lib; do
+		if test -z "$libdir" -o -d "$libdir"; then
+			libflag=
+			test -n "$libdir" && libflag=-L${libdir}
+			if check_lib $func $libflag $libs; then
+				out HAS_${lib_uc}=yes
+				out ${lib_uc}_LDFLAGS=$libflag
+				LDFLAGS="$LDFLAGS $libflag"
+				out ${lib_uc}_LIBS=$libs
+				LIBS="$LIBS $libs"
+				msg yes
+				return 0
+			fi
+		fi
+	done
+
+	msg no
+	return 1
+}
+
+check_c_compiler()
+{
+	checking for a C compiler...
+	f=/tmp/config.$$.c
+	echo "int main() { return 0; }" >$f
+	HAS_CC=no
+	log trying ${CC} ${CFLAGS} $f -o $f.bin
+	${CC} ${CFLAGS} $f -o $f.bin && HAS_CC=yes
+	rm -f $f $f.bin
+	msg $HAS_CC
+	test $HAS_CC = yes && return 0
+	return 1
+}
+
+check_program()
+{
+	prog=$1
+	shift
+	args=$*
+	checking for $prog...
+	has_prog=no
+	progpath=
+	for bindir in "" /usr/local/bin/ /opt/local/bin/ /sw/bin/; do
+		progpath=$bindir$prog 
+		if test -z "$bindir" -o -x $progpath; then
+			log trying $progpath $args
+			$progpath $args >&2 && { has_prog=yes; break; }
+		fi
+	done
+	test $has_prog = no && progpath=
+	msg $has_prog \($progpath\)
+	echo $progpath
+}
+
+pkg_check()
+{
+	lib=$1
+	lib_uc=$(echo $lib | tr a-z- A-Z_)
+
+	test "$has_pkg_config" = no && return 1
+	test -z "$pkg_config" && pkg_config=$(check_program pkg-config --version)
+	test -z "$pkg_config" && { has_pkg_config=no; return 1; }
+
+	checking for $lib with pkg-config...
+	has_lib=no
+	if $pkg_config --exists $lib; then
+		has_lib=yes
+		out HAS_${lib_uc}=yes
+		out ${lib_uc}_CFLAGS=`$pkg_config --cflags $lib`
+		out ${lib_ub}_LDFLAGS=`$pkg_config --ldflags $lib`
+		out ${lib_ub}_LIBS=`$pkg_config --libs $lib`
+	else
+		out HAS_${lib_uc}=no
+	fi
+	msg $has_lib
+	test $has_lib = yes && return 0
+	return 1
+}
+
+# returns whether the program was successfully compiled
+try_compile()
+{
+	f=/tmp/config.$$.c
+	outfile=${1:-$f.bin}
+	cat >$f
+	log ${CC} -o $outfile $f ${CFLAGS} ${LDFLAGS} ${LIBS}
+	${CC} -o $outfile $f ${CFLAGS} ${LDFLAGS} ${LIBS}
+	rc=$?
+	if test $rc -ne 0; then
+		log failed program:
+		log '=======[ begin code ]========'
+		logfile $f
+		log '========[ end code ]========='
+	fi
+	rm -f $f
+	test -z "$1" && rm -f $outfile
+	return $rc
+}
+
+# returns whether the program was successfully compiled and run
+# sets variable program_output to stdout from program
+try_run()
+{
+	program_output=
+	bin=/tmp/config.$$.bin
+	try_compile $bin
+	rc=$?
+	if test $rc -eq 0; then
+		program_output=`$bin`
+		log program output:
+		log $program_output
+	       	rc=$?
+	fi
+	rm -f $bin
+	return $rc
+}
+
+check_bdb_version()
+{
+	try_run <<EOF
+#include <stdio.h>
+#include <db.h>
+int main(int argc, char **argv)
+{
+  int major, minor, patch;
+  db_version(&major, &minor, &patch);
+  if(DB_VERSION_MAJOR == major && DB_VERSION_MINOR == minor &&
+     DB_VERSION_PATCH == patch)
+  {
+    printf("%d.%d.%d\n", DB_VERSION_MAJOR, DB_VERSION_MINOR, DB_VERSION_PATCH);
+    return 0;
+  }
+  else
+    return 1;
+}
+EOF
+	return $?
+}
+
+check_bdb_version_path()
+{
+	local libdir=$1
+	local incdir=$2
+
+	old_CFLAGS=$CFLAGS
+	old_LDFLAGS=$LDFLAGS
+	old_LIBS=$LIBS
+
+	if test -n "$libdir"; then
+		LDFLAGS="$old_LDFLAGS -L$libdir"
+		checking for Berkeley DB, lib in $libdir, headers in $incdir...
+	else
+		checking for Berkeley DB...
+	fi
+
+	if test -n "$incdir"; then
+		CFLAGS="$old_CFLAGS -I$incdir"
+	fi
+
+	rc=1
+	LIBS="$old_LIBS -ldb"
+	if check_bdb_version; then
+		msg yes, $program_output
+		out BDB_VERSION=$program_output
+		out HAS_BDB=yes
+		out BDB_CFLAGS="-I$incdir"
+		out BDB_LDFLAGS="-L$libdir"
+		out BDB_LIBS="-ldb"
+		rc=0
+	else
+		msg no
+	fi
+
+	CFLAGS=$old_CFLAGS
+	LDFLAGS=$old_LDFLAGS
+	LIBS=$old_LIBS
+
+	return $rc
+}
+
+search_bdb()
+{
+	min_version=$1
+	check_bdb_version_path && return 0
+	for dir in /usr/local /opt/local /sw; do
+		check_bdb_version_path $dir/lib $dir/include && return 0
+		check_bdb_version_path $dir/lib $dir/include/db4 && return 0
+		check_bdb_version_path $dir/lib/db4 $dir/include/db4 && return 0
+	done
+
+	return 1
+}
+
+check_iconv_constness()
+{
+	checking if iconv uses const parameter...
+	old_CFLAGS=$CFLAGS
+	CFLAGS="-Wall -Werror $CFLAGS"
+	try_compile <<EOF
+#include <iconv.h>
+int main(void) {
+iconv_t cd;
+const char *inp; char *outp;
+size_t inbytesleft, outbytesleft;
+size_t rc = iconv(cd, &inp, &inbytesleft, &outp, &outbytesleft);
+return rc; }
+EOF
+	rc=$?
+	CFLAGS=$old_CFLAGS
+	if test $rc -ne 0; then
+		msg no
+		out ICONV_CONST=
+	else
+		msg yes
+		out ICONV_CONST=const
+	fi
+}
+

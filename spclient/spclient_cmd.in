@@ -1,0 +1,59 @@
+a 0
+
+# the name of the struct
+cs sp_t
+ss ui_t
+
+# prefix
+cp sp
+sp ui
+
+# extra include files
+ci "spclient_cmd.h"
+si "ui.h"
+
+# extra members in the struct
+m int fd
+m struct evbuffer *input
+m struct evbuffer *output
+m void *user_data
+
+c search-response int:id string:hub_address string:nick string:filename int:filetype uint64:size int:openslots int:totalslots string:tth string:speed
+c user-logout string:hub_address string:nick
+c user-login string:hub_address string:nick string:description string:tag string:speed string:email uint64:share_size bool:is_operator uint:extra_slots
+c user-update string:hub_address string:nick string:description string:tag string:speed string:email uint64:share_size bool:is_operator uint:extra_slots
+c public-message string:hub_address string:nick string:message
+c private-message string:hub_address string:my_nick string:remote_nick string:remote_display_nick string:message
+c filelist-finished string:hub_address string:nick string:filename
+c hubname string:hub_address string:new_name
+c status-message string:hub_address string:message ...
+c download-starting string:hub_address string:nick string:remote_filename string:local_filename uint64:filesize
+c upload-starting string:hub_address string:nick string:local_filename uint64:filesize
+c download-finished string:local_filename
+c directory-finished string:target_directory
+c upload-finished string:local_filename
+c transfer-aborted string:local_filename
+c queue-add-target string:local_filename uint64:size string:tth uint:priority
+c queue-add-filelist string:nick uint:priority
+c queue-add-source string:local_filename string:nick string:remote_filename
+c queue-add-directory string:target_directory string:nick
+c queue-remove-target string:local_filename
+c queue-remove-directory string:target_directory
+c queue-remove-filelist string:nick
+c queue-remove-source string:local_filename string:nick
+c hub-redirect string:hub_address string:new_address
+c transfer-stats string:local_filename uint64:offset uint64:filesize uint:bytes_per_sec
+c hub-add string:hub_address string:hub_name string:nick string:description string:encoding
+c port int:port
+c connection-closed string:nick int:direction
+c connect-failed string:hub_address
+c get-password string:hub_address string:nick
+c share-stats string:path uint64:size uint64:totsize uint64:dupsize uint:nfiles uint:ntotfiles uint:nduplicates
+c share-duplicate-found string:path
+c server-version string:version
+c user-command string:hub_address int:type int:context string:description string:command
+c set-priority string:target_filename uint:priority
+c hub-disconnected string:hub_address
+c stored-filelists string:nicks
+c init-completion int:level
+

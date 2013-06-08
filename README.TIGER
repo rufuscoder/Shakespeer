@@ -1,0 +1,13 @@
+The reference tiger hash implementation was downloaded from http://www.cs.technion.ac.il/~biham/Reports/Tiger/.
+
+Authors: Eli Bihama (http://www.cs.technion.ac.il/~biham/)
+         Ross Anderson (http://www.cl.cam.ac.uk/users/rja14/)
+
+License: (or lack of)
+
+Tiger has no usage restrictions nor patents. It can be used freely, with the
+reference implementation, with other implementations or with a modification to
+the reference implementation (as long as it still implements Tiger). We only
+ask you to let us know about your implementation and to cite the origin of
+Tiger and of the reference implementation.
+

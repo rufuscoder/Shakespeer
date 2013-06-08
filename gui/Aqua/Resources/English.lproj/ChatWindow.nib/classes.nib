@@ -1,0 +1,15 @@
+{
+    IBClasses = (
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            ACTIONS = {sendMessage = id; }; 
+            CLASS = SPChatWindowController; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {chatTextView = NSTextView; chatView = NSView; inputField = NSTextField; }; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {CLASS = URLTextView; LANGUAGE = ObjC; SUPERCLASS = NSTextView; }, 
+        {CLASS = XBorderedView; LANGUAGE = ObjC; SUPERCLASS = NSView; }
+    ); 
+    IBVersion = 1; 
+}

@@ -1,0 +1,122 @@
+#!/bin/sh
+
+die()
+{
+    message=$1
+    echo "$message"
+    test -n "$MYDEV" && hdiutil eject $MYDEV
+    /bin/rm -f $TMPDMG
+    exit 1
+}
+
+version=${1:-snapshot-`date +%Y%m%d`}
+top_dir=${2:-.}
+output_dir=${3:-.}
+package=${4:-shakespeer}
+
+TMPDMG=$top_dir/shakespeer-tmp$$.dmg
+/bin/rm -f $TMPDMG
+
+test -x "$top_dir/sphubd/sphubd" || die "No sphubd build found"
+
+APP="$top_dir/gui/Aqua/ShakesPeer.app"
+test -d "$APP" || die "No ShakesPeer build found in $APP"
+
+VOL="$package-$version"
+echo "Creating disk image $VOL"
+
+# clean up if we're interrupted
+trap 'rm -f $TMPDMG; exit 1' 2 3 15
+
+# create a disk image
+hdiutil create -megabytes 32 $TMPDMG -layout NONE
+# associate a device with this but don't mount it
+MYDEV=`hdid -nomount $TMPDMG`
+test -n "$MYDEV" || die "failed to attach disk image"
+# create a file system
+newfs_hfs -v "$VOL" $MYDEV || die "failed to create file system"
+# diassociate device
+hdiutil eject $MYDEV
+# mount it
+hdid $TMPDMG || die "failed to mount disk image"
+
+# some directories
+root="/Volumes/$VOL"
+contents="$root/ShakesPeer.app/Contents"
+resources="$contents/Resources"
+frameworks="$contents/Frameworks"
+
+# copy stuff to the disk image
+echo "+ copying ShakesPeer.app"
+/bin/cp -R $APP "$root"
+
+/bin/mkdir -p "$frameworks" || die "failed to create directory Frameworks"
+
+echo "+ copying license"
+/bin/cp "$top_dir/License.txt" "$root" || die "failed to copy license to disk image"
+
+echo "+ copying release notes"
+/bin/cp "$top_dir/NEWS" "$root/Release Notes.txt" || die "failed to copy release notes to disk image"
+
+get_external_dependencies()
+{
+    prog=$1
+
+    echo $(otool -L "$prog" | sed -n -E -e '/^[[:space:]]\/usr\/lib\//d' \
+                                        -e '/^[[:space:]]\/System\/Library\//d' \
+                                        -e '/^[[:space:]]@executable_path/d' \
+                                        -e 's/[[:space:]]+(.+) \(.*$/\1/p' \
+                            | sort | uniq)
+}
+
+fix_external_libs()
+{
+    prog=$1
+    baseprog=$(basename "$prog")
+
+    external_libs=$(get_external_dependencies "$prog")
+
+    for lib in $external_libs; do
+        baselib=$(basename $lib)
+
+        if test ! -f "$frameworks/$baselib"; then
+            echo "+ copying $lib"
+            /bin/cp $lib "$frameworks" || die "failed to copy $lib to disk image"
+            /bin/chmod 0755 "$frameworks/$baselib"
+
+            echo "+ changing id of $baselib"
+            install_name_tool -id "@executable_path/../Frameworks/$baselib" \
+                "$frameworks/$baselib"
+
+            echo -n "+ changing references to external libraries in $baselib: "
+            lib_external_libs=$(get_external_dependencies "$frameworks/$baselib")
+            for lib_lib in $external_libs; do
+                lib_baselib=$(basename $lib_lib)
+                echo -n "$lib_baselib, "
+                install_name_tool -change "$lib_lib" \
+                     "@executable_path/../Frameworks/$lib_baselib" \
+                     "$frameworks/$baselib"
+            done
+            echo "done"
+        fi
+
+        echo "+ changing reference to $baselib in $baseprog"
+        install_name_tool -change "$lib" \
+           "@executable_path/../Frameworks/$baselib" "$prog" || \
+               die "failed to change library reference for $lib in $baseprog"
+    done
+}
+
+fix_external_libs "$resources/sphubd"
+fix_external_libs "$resources/sphashd"
+fix_external_libs "$contents/MacOS/ShakesPeer"
+
+rm -f "$output_dir/$VOL.dmg"
+
+# eject
+hdiutil eject $MYDEV
+# compress it and make it read only
+hdiutil convert -format UDZO $TMPDMG -o "$output_dir/$VOL.dmg"
+/bin/rm -f $TMPDMG
+ls -lh "$output_dir/$VOL.dmg"
+

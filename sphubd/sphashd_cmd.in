@@ -1,0 +1,37 @@
+# _cmd.c includes
+ci "sphashd_cmd.h"
+
+# _send.c includes
+si "sphashd_client.h"
+
+# _cmd.h includes
+chi "sys_queue.h"
+chi <sys/time.h>
+chi <sys/types.h>
+chi <event.h>
+chi "tigertree.h"
+
+# what prefix to use
+cp hc
+sp hs
+
+# name of the struct
+cs hc_t
+ss hs_t
+
+# extra members in the struct
+m LIST_ENTRY(hc) link
+m struct event in_event
+m int fd
+m int current_fd
+m TAILQ_HEAD(, hash_entry) hash_queue_head
+m struct bufferevent *bufev
+m struct hash_entry *current_entry
+m struct tt_context tth
+
+# commands
+c add string:filename
+c shutdown
+c abort
+c set-delay uint:delay
+
